@@ -66,15 +66,20 @@ function init() {
 	aspectRatio = canvasWidth/canvasHeight;
 	// OrthographicCamera( left, right, top, bottom, near, far )
 	camera = new THREE.PerspectiveCamera( 45, aspectRatio, 10, 10000 );
-	camera.position.set( -200, 650, 1000 );
+	camera.position.set( 0, 500, 600 );
 
 	// CONTROLS
 	cameraControls = new OrbitControls(camera, renderer.domElement);
-	cameraControls.target.set(-200,250,350);
+	cameraControls.target.set(0,0,0);
+
+	
 
 	var startdir = new THREE.Vector3();
 	startdir.subVectors( camera.position, cameraControls.target );
 	eyeTargetScale = Math.tan(camera.fov*(Math.PI/180)/2)*startdir.length();
+
+	// décale la caméra sur la droite
+	camera.position.z += 300;
 
 }
 
@@ -94,6 +99,9 @@ function fillScene() {
 	light.position.set( -400, 200, -300 );
 
 	window.scene.add( light );
+	
+	
+	
 }
 
 //carreau d'aide pour la grille
@@ -134,80 +142,88 @@ mtlLoader.load(
     }
 )
 
+const mtlLoader2 = new MTLLoader()
+mtlLoader2.load(
+    'objet/NAGEUR.mtl',
+    (materials) => {
+        materials.preload()
+        console.log(materials)
+         const objLoader = new OBJLoader()
+         objLoader.setMaterials(materials)
+         objLoader.load(
+            'objet/nageur.obj',
+             (object) => {
+                object.rotation.y = Math.PI
+                object.position.x = -800
+                object.position.y = -140
+                object.children[0].material.envMap = window.scene.background
+                object.children[0].material.envMapIntensity = 0.5
+                 scene.add(object)
+             },
+             (xhr) => {
+                 console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+             },
+             (error) => {
+                 console.log('An error happened')
+             }
+         )
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log('An error happened')
+    }
+)
 
-// //ajout de la table
-// var loader = new OBJLoader();
-// var textureLoader = new THREE.TextureLoader();
-// var texture = textureLoader.load('texture/tile-ext-border.jpg');
+// Ajouter moi du brouillard
+function addFog() {
+	scene.fog = new THREE.FogExp2(0x808080, 0.00025);
+}
 
-// loader.load('objet/swimming-pool.obj', function (object) {
-//     // L'objet a été chargé avec succès
-//     // Vous pouvez ajouter l'objet à votre scène WebGL ici
-//     scene.add(object);
 
-//     // Mettre la table à l'échelle
-//     object.scale.set(1, 1, 0.9);
 
-//     // Mettre la table à la position
-//     object.position.set(0, 200, -11);
 
-//     // appliquer à l'objet la texture
-//     object.traverse(function (child) {
-//         if (child instanceof THREE.Mesh) {
-//             child.material.map = texture;
-//         }
-//     });
-// });
 
-// //ajout de la nape
-// loader.load('objet/nape.obj', function (object) {
-//     // L'objet a été chargé avec succès
-//     // Vous pouvez ajouter l'objet à votre scène WebGL ici
-//     scene.add(object);
+// Premier personnage
+ var loader = new OBJLoader();
 
-//     // Mettre la table à l'échelle
-//     object.scale.set(90, 100, 90);
+ loader.load('objet/rp_dennis_posed_004_30k.OBJ', function (object) {
+     scene.add(object);
 
-//     // Mettre la nape sur la table à la bonne position
-//     object.position.set(265, 100, -37);
-//     //rotation de la nape 90°
-//     object.rotation.y = Math.PI / 2;
+	// Positionner le personnage
+	object.position.set(300, 35, 300)
 
-//     // Charger la texture et l'appliquer à l'objet
-//     textureLoader.load('texture/nape.png', function (texture) {
-//         object.traverse(function (child) {
-//             if (child instanceof THREE.Mesh) {
-//                 child.material.map = texture;
-//             }
-//         });
-//     });
+	// Pivote le 180°
+	object.rotation.y = Math.PI
+ });
 
-// });
+//Deuxieme personnage
 
-// //ajout du bowl
-// loader.load('objet/bowl.obj', function (object) {
-//     // L'objet a été chargé avec succès
-//     // Vous pouvez ajouter l'objet à votre scène WebGL ici
-//     scene.add(object);
+var loader = new OBJLoader();
 
-//     // Mettre la table à l'échelle
-//     object.scale.set(20, 20, 20);
+ loader.load('objet/rp_mei_posed_001_30k.OBJ', function (object) {
+	 scene.add(object);
+	// Positionner le personnage
+	object.position.set(-50, 35, 550)
 
-//     // Mettre la nape sur la table à la bonne position
-//     object.position.set(20, 230, 10);
-//     //rotation de la nape 90°
-//     object.rotation.y = Math.PI / 2;
+	// Pivote le 90°
+	object.rotation.y = Math.PI/2
+});
 
-//     // Charger la texture et l'appliquer à l'objet
-//     textureLoader.load('texture/osier.png', function (texture) {
-//         object.traverse(function (child) {
-//             if (child instanceof THREE.Mesh) {
-//                 child.material.map = texture;
-//             }
-//         });
-//     });
+// Troisème personnage
+var loader = new OBJLoader();
 
-// });
+loader.load('objet/nageur.obj', function (object) {
+	scene.add(object);
+
+   // Positionner le personnage
+   object.position.set(1, 1, 1)
+
+   // Pivote le 180°
+   object.rotation.y = Math.PI
+});
+
 
 //ajout de la scène au DOM
 function addToDOM() {
@@ -240,6 +256,7 @@ try {
 	addToDOM();
 	animate();
 	initSkyBox();
+	addFog();
 } catch(e) {
 	var errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
 	$('#webGL').append(errorReport+e);
