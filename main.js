@@ -48,8 +48,8 @@ function initSkyBox() {
 
 //initialisation de la caméra
 function init() {
-	var canvasWidth = 846;
-	var canvasHeight = 494;
+	var canvasWidth = 1000;
+	var canvasHeight = 500;
 	// For grading the window is fixed in size; here's general code:
 	//var canvasWidth = window.innerWidth;
 	//var canvasHeight = window.innerHeight;
@@ -60,6 +60,14 @@ function init() {
 	renderer.gammaOutput = true;
 	renderer.setSize(canvasWidth, canvasHeight);
 	renderer.setClearColor( 0x808080, 1.0 );
+	// Ajoute de l'ombre
+	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	renderer.shadowMapSoft = true;
+	renderer.shadowMapAutoUpdate = true;
+	renderer.shadowMap.needsUpdate = true;
+
+
 
 	// CAMERA
 	// aspect ratio of width of window divided by height of window
@@ -81,33 +89,78 @@ function init() {
 	// décale la caméra sur la droite
 	camera.position.z += 300;
 
-}
 
-//ajout de la scène
-function fillScene() {
-	window.scene = new THREE.Scene();
+	// Premier personnage
+	var loader = new OBJLoader();
 
-	// LIGHTS
-	window.scene.add( new THREE.AmbientLight( 0x222222 ) );
-
-	var light = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
-	light.position.set( 200, 400, 500 );
-
-	window.scene.add( light );
-
-	light = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
-	light.position.set( -400, 200, -300 );
-
-	window.scene.add( light );
-	
-	
-	
-}
-
-//carreau d'aide pour la grille
+	loader.load('objet/rp_dennis_posed_004_30k.OBJ', function (object) {
+		object.traverse( function ( object ) {
+			if ( object instanceof THREE.Mesh ) {
+				object.castShadow = true;
+				object.receiveShadow = true;
+			}
+		} );
+   
+	   // Positionner le personnage
+	   object.position.set(300, 35, 300)
+   
+	   // Pivote le 180°
+	   object.rotation.y = Math.PI
 
 
-// Charge moi un objet avec obj et mtlloader et applique lui une texture
+	   window.scene.add(object);
+   
+	});
+   
+   //Deuxieme personnage
+   
+   var loader = new OBJLoader();
+   
+	loader.load('objet/rp_mei_posed_001_30k.OBJ', function (object) {
+	   
+	   object.traverse( function ( object ) {
+		if ( object instanceof THREE.Mesh ) {
+			object.castShadow = true;
+			object.receiveShadow = true;
+		}
+	} );
+	   // Positionner le personnage
+	   object.position.set(-50, 35, 550)
+   
+	   // Pivote le 90°
+	   object.rotation.y = Math.PI/2
+	   window.scene.add(object);
+   });
+   
+   // charge nageur.obj
+   var loader = new OBJLoader();
+   
+	loader.load('objet/swimmer.obj', function (object) {
+
+		object.traverse( function ( object ) {
+			if ( object instanceof THREE.Mesh ) {
+				object.castShadow = true;
+				object.receiveShadow = true;
+			}
+		} );
+	   
+	   // Positionner le personnage
+	   object.position.set(-50, 0, 225)
+   
+	   // Pivote le 180°
+	   object.rotation.y = Math.PI
+   
+	   // Met le a plat sur le sol
+	   object.rotation.x = -Math.PI/2
+   
+	   // Oriente le de 90°
+	   object.rotation.z = Math.PI/2
+
+	   window.scene.add(object);
+   
+   });
+
+   // Charge moi un objet avec obj et mtlloader et applique lui une texture
 const mtlLoader = new MTLLoader()
 mtlLoader.load(
     'objet/swimming-pool.mtl',
@@ -119,11 +172,18 @@ mtlLoader.load(
          objLoader.load(
             'objet/swimming-pool.obj',
              (object) => {
+				object.traverse( function ( object ) {
+					if ( object instanceof THREE.Mesh ) {
+						object.castShadow = true;
+						object.receiveShadow = true;
+					}
+				} );
                 object.rotation.y = Math.PI
                 object.position.x = -800
                 object.position.y = -140
                 object.children[0].material.envMap = window.scene.background
                 object.children[0].material.envMapIntensity = 0.5
+				object.receiveShadow = true;
                  scene.add(object)
              },
              (xhr) => {
@@ -142,87 +202,62 @@ mtlLoader.load(
     }
 )
 
-const mtlLoader2 = new MTLLoader()
-mtlLoader2.load(
-    'objet/NAGEUR.mtl',
-    (materials) => {
-        materials.preload()
-        console.log(materials)
-         const objLoader = new OBJLoader()
-         objLoader.setMaterials(materials)
-         objLoader.load(
-            'objet/nageur.obj',
-             (object) => {
-                object.rotation.y = Math.PI
-                object.position.x = -800
-                object.position.y = -140
-                object.children[0].material.envMap = window.scene.background
-                object.children[0].material.envMapIntensity = 0.5
-                 scene.add(object)
-             },
-             (xhr) => {
-                 console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-             },
-             (error) => {
-                 console.log('An error happened')
-             }
-         )
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-        console.log('An error happened')
-    }
-)
 
-// Ajouter moi du brouillard
-function addFog() {
-	scene.fog = new THREE.FogExp2(0x808080, 0.00025);
+}
+
+function drawHelpers() {
+	Coordinates.drawGrid({size:10000,scale:0.01} );
+}
+
+//ajout de la scène
+function fillScene() {
+	window.scene = new THREE.Scene();
+
+	// LIGHTS
+
+	var light = new THREE.DirectionalLight( 0xFFFFFF, 0.5 );
+	light.position.set( 200, 400, 500 );
+	light.castShadow = true; 
+
+	window.scene.add( light );
+
+	light = new THREE.SpotLight( 0xFFFFFF, 5.0 );
+	light.castShadow = true; 
+	light.position.set( -1500, 500, -300 );
+	light.shadow.mapSize.width = 512;
+	light.shadow.mapSize.height = 512;
+	light.shadow.camera.near = 1;
+	light.shadow.camera.far =2500;
+
+	window.scene.add( light );
+
+
+	
+	var helper = new THREE.CameraHelper( light.shadow.camera );
+	window.scene.add( helper );
+
+	var helper = new THREE.CameraHelper( light.shadow.camera );
+	window.scene.add( helper );
+	
 }
 
 
 
 
 
-// Premier personnage
- var loader = new OBJLoader();
 
- loader.load('objet/rp_dennis_posed_004_30k.OBJ', function (object) {
-     scene.add(object);
+// Ajouter moi du brouillard
+function addFog() {
+	window.scene.fog = new THREE.FogExp2(0x808080, 0.00025);
+}
 
-	// Positionner le personnage
-	object.position.set(300, 35, 300)
 
-	// Pivote le 180°
-	object.rotation.y = Math.PI
- });
 
-//Deuxieme personnage
 
-var loader = new OBJLoader();
 
- loader.load('objet/rp_mei_posed_001_30k.OBJ', function (object) {
-	 scene.add(object);
-	// Positionner le personnage
-	object.position.set(-50, 35, 550)
 
-	// Pivote le 90°
-	object.rotation.y = Math.PI/2
-});
 
-// Troisème personnage
-var loader = new OBJLoader();
 
-loader.load('objet/nageur.obj', function (object) {
-	scene.add(object);
-
-   // Positionner le personnage
-   object.position.set(1, 1, 1)
-
-   // Pivote le 180°
-   object.rotation.y = Math.PI
-});
 
 
 //ajout de la scène au DOM
@@ -253,10 +288,12 @@ try {
 	init();
 	fillScene();
 	setupGui();
+	drawHelpers();
 	addToDOM();
 	animate();
 	initSkyBox();
 	addFog();
+
 } catch(e) {
 	var errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
 	$('#webGL').append(errorReport+e);
