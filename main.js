@@ -90,12 +90,18 @@ function init() {
 	// décale la caméra sur la droite
 	camera.position.z += 300;
 
-
+    // Premier perso
 
     const fbxLoader = new FBXLoader()
     fbxLoader.load(
     'objet/rp_dennis_posed_004_30k.fbx',
     (object) => {
+        object.traverse( function ( object ) {
+            if ( object instanceof THREE.Mesh ) {
+                object.castShadow = true;
+                object.receiveShadow = true;
+            }
+        } );
         object.position.set(300, 35, 300)
 	   object.rotation.y = Math.PI
         window.scene.add(object)
@@ -108,9 +114,17 @@ function init() {
     }
 )
 
+    // Deuxime perso
+
     fbxLoader.load(
     'objet/rp_mei_posed_001_30k.fbx',
     (object) => {
+        object.traverse( function ( object ) {
+            if ( object instanceof THREE.Mesh ) {
+                object.castShadow = true;
+                object.receiveShadow = true;
+            }
+        } );
         object.position.set(-50, 35, 550)
    
         // Pivote le 90°
@@ -125,6 +139,21 @@ function init() {
     }
     )
 
+   
+   //Deuxieme personnage
+   
+   var loader = new OBJLoader();
+   
+	loader.load('objet/rp_mei_posed_001_30k.OBJ', function (object) {
+	   
+	   
+	   // Positionner le personnage
+	   object.position.set(-50, 35, 550)
+   
+	   // Pivote le 90°
+	   object.rotation.y = Math.PI/2
+	   window.scene.add(object);
+   });
    
    // charge nageur.obj
    var loader = new OBJLoader();
