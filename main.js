@@ -3,7 +3,6 @@ import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
-
 import {dat} from './lib/dat.gui.min.js';
 var camera, renderer;
 var windowScale;
@@ -92,27 +91,40 @@ function init() {
 	camera.position.z += 300;
 
 
-	// Premier personnage
-	var loader = new OBJLoader();
 
-	loader.load('objet/rp_dennis_posed_004_30k.OBJ', function (object) {
-		object.traverse( function ( object ) {
-			if ( object instanceof THREE.Mesh ) {
-				object.castShadow = true;
-				object.receiveShadow = true;
-			}
-		} );
-   
-	   // Positionner le personnage
-	   object.position.set(300, 35, 300)
-   
-	   // Pivote le 180°
+    const fbxLoader = new FBXLoader()
+    fbxLoader.load(
+    'objet/rp_dennis_posed_004_30k.fbx',
+    (object) => {
+        object.position.set(300, 35, 300)
 	   object.rotation.y = Math.PI
+        window.scene.add(object)
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log(error)
+    }
+)
 
-
-	   window.scene.add(object);
+    fbxLoader.load(
+    'objet/rp_mei_posed_001_30k.fbx',
+    (object) => {
+        object.position.set(-50, 35, 550)
    
-	});
+        // Pivote le 90°
+        object.rotation.y = Math.PI/2
+        window.scene.add(object)
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log(error)
+    }
+    )
+
    
    //Deuxieme personnage
    
