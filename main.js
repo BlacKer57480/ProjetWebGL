@@ -126,26 +126,6 @@ function init() {
     )
 
    
-   //Deuxieme personnage
-   
-   var loader = new OBJLoader();
-   
-	loader.load('objet/rp_mei_posed_001_30k.OBJ', function (object) {
-	   
-	   object.traverse( function ( object ) {
-		if ( object instanceof THREE.Mesh ) {
-			object.castShadow = true;
-			object.receiveShadow = true;
-		}
-	} );
-	   // Positionner le personnage
-	   object.position.set(-50, 35, 550)
-   
-	   // Pivote le 90°
-	   object.rotation.y = Math.PI/2
-	   window.scene.add(object);
-   });
-   
    // charge nageur.obj
    var loader = new OBJLoader();
    
