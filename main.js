@@ -3,6 +3,8 @@ import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { Reflector } from 'three/addons/objects/Reflector.js';
+
 import {dat} from './lib/dat.gui.min.js';
 var camera, renderer;
 var windowScale;
@@ -90,6 +92,8 @@ function init() {
 	// décale la caméra sur la droite
 	camera.position.z += 300;
 
+
+
     // Premier perso
 
     const fbxLoader = new FBXLoader()
@@ -102,7 +106,7 @@ function init() {
                 object.receiveShadow = true;
             }
         } );
-        object.position.set(300, 35, 300)
+        object.position.set(300, 0, 300)
 	   object.rotation.y = Math.PI
         window.scene.add(object)
     },
@@ -125,7 +129,7 @@ function init() {
                 object.receiveShadow = true;
             }
         } );
-        object.position.set(-50, 35, 550)
+        object.position.set(-50, 0, 550)
    
         // Pivote le 90°
         object.rotation.y = Math.PI/2
@@ -140,20 +144,7 @@ function init() {
     )
 
    
-   //Deuxieme personnage
-   
-   var loader = new OBJLoader();
-   
-	loader.load('objet/rp_mei_posed_001_30k.OBJ', function (object) {
-	   
-	   
-	   // Positionner le personnage
-	   object.position.set(-50, 35, 550)
-   
-	   // Pivote le 90°
-	   object.rotation.y = Math.PI/2
-	   window.scene.add(object);
-   });
+
    
    // charge nageur.obj
    var loader = new OBJLoader();
@@ -168,7 +159,7 @@ function init() {
 		} );
 	   
 	   // Positionner le personnage
-	   object.position.set(-50, 0, 225)
+	   object.position.set(-50, -50, 225)
    
 	   // Pivote le 180°
 	   object.rotation.y = Math.PI
@@ -203,7 +194,7 @@ mtlLoader.load(
 				} );
                 object.rotation.y = Math.PI
                 object.position.x = -800
-                object.position.y = -140
+                object.position.y = -172
                 object.children[0].material.envMap = window.scene.background
                 object.children[0].material.envMapIntensity = 0.5
 				object.receiveShadow = true;
@@ -224,7 +215,6 @@ mtlLoader.load(
         console.log('An error happened')
     }
 )
-
 
 }
 
@@ -261,25 +251,244 @@ function fillScene() {
 
 	var helper = new THREE.CameraHelper( light.shadow.camera );
 	window.scene.add( helper );
+
+	var solidGround = new THREE.Mesh(
+        new THREE.PlaneGeometry(200, 1000),
+        new THREE.MeshPhongMaterial({
+            polygonOffset: true,
+            polygonOffsetFactor: 1.0,
+            polygonOffsetUnits: 4.0,
+            receiveShadow: true,
+            specular: new THREE.Color(0x000000),
+            shininess: 0.0,
+            emissive: new THREE.Color(0x000000),
+            transparent: false,
+            opacity: 1.0,
+            illumination: 1,
+            specularMap: null,
+            alphaMap: null,
+            combine: THREE.MultiplyOperation,
+            reflectivity: 0,
+            refractionRatio: 0.98,
+            depthTest: true,
+            depthWrite: true,
+            clipShadows: false,
+            fog: true
+        })
+    );
+    solidGround.rotation.x = -Math.PI / 2;
+    solidGround.position.x = 490;
+    solidGround.position.z = 110;
+	solidGround.receiveShadow = true;
+
+    // Chargement de la texture
+    var textureLoader = new THREE.TextureLoader();
+    var texture = textureLoader.load('objet/tile-ext-border.jpg');
+
+
+    // Appliquer la texture au matériau de l'objet
+    solidGround.material.map = texture;
+
+    // Définir les paramètres du matériau
+    solidGround.material.emissive.setHex(0x000000);
+    solidGround.material.ambient = new THREE.Color(0x000000);
+    solidGround.material.color = new THREE.Color(0x646464);
+
+    // Définir les paramètres de la texture
+    solidGround.material.shininess = 0.0;
+    solidGround.material.specular = new THREE.Color(0x000000);
+    solidGround.material.alphaMap = null;
+    solidGround.material.combine = THREE.MultiplyOperation;
+    solidGround.material.reflectivity = 0;
+    solidGround.material.refractionRatio = 0.98;
+    solidGround.material.depthTest = true;
+    solidGround.material.depthWrite = true;
+    solidGround.material.clipShadows = false;
+    solidGround.material.fog = true;
+
+    scene.add(solidGround);
+
+
+	var solidGround = new THREE.Mesh(
+        new THREE.PlaneGeometry(200, 1000),
+        new THREE.MeshPhongMaterial({
+            polygonOffset: true,
+            polygonOffsetFactor: 1.0,
+            polygonOffsetUnits: 4.0,
+            receiveShadow: true,
+            specular: new THREE.Color(0x000000),
+            shininess: 0.0,
+            emissive: new THREE.Color(0x000000),
+            transparent: false,
+            opacity: 1.0,
+            illumination: 1,
+            specularMap: null,
+            alphaMap: null,
+            combine: THREE.MultiplyOperation,
+            reflectivity: 0,
+            refractionRatio: 0.98,
+            depthTest: true,
+            depthWrite: true,
+            clipShadows: false,
+            fog: true
+        })
+    );
+    solidGround.rotation.x = -Math.PI / 2;
+    solidGround.position.x = -1400;
+    solidGround.position.z = 110;
+	solidGround.receiveShadow = true;
+
+    // Chargement de la texture
+    var textureLoader = new THREE.TextureLoader();
+    var texture = textureLoader.load('objet/tile-ext-border.jpg');
+	
+
+    // Appliquer la texture au matériau de l'objet
+    solidGround.material.map = texture;
+
+    // Définir les paramètres du matériau
+    solidGround.material.emissive.setHex(0x000000);
+    solidGround.material.ambient = new THREE.Color(0x000000);
+    solidGround.material.color = new THREE.Color(0x646464);
+
+    // Définir les paramètres de la texture
+    solidGround.material.shininess = 0.0;
+    solidGround.material.specular = new THREE.Color(0x000000);
+    solidGround.material.alphaMap = null;
+    solidGround.material.combine = THREE.MultiplyOperation;
+    solidGround.material.reflectivity = 0;
+    solidGround.material.refractionRatio = 0.98;
+    solidGround.material.depthTest = true;
+    solidGround.material.depthWrite = true;
+    solidGround.material.clipShadows = false;
+    solidGround.material.fog = true;
+
+    scene.add(solidGround);
+
+	var solidGround = new THREE.Mesh(
+        new THREE.PlaneGeometry(2080, 200),
+        new THREE.MeshPhongMaterial({
+            polygonOffset: true,
+            polygonOffsetFactor: 1.0,
+            polygonOffsetUnits: 4.0,
+            receiveShadow: true,
+            specular: new THREE.Color(0x000000),
+            shininess: 0.0,
+            emissive: new THREE.Color(0x000000),
+            transparent: false,
+            opacity: 1.0,
+            illumination: 1,
+            specularMap: null,
+            alphaMap: null,
+            combine: THREE.MultiplyOperation,
+            reflectivity: 0,
+            refractionRatio: 0.98,
+            depthTest: true,
+            depthWrite: true,
+            clipShadows: false,
+            fog: true
+        })
+    );
+    solidGround.rotation.x = -Math.PI / 2;
+    solidGround.position.x = -450;
+    solidGround.position.z = -487;
+	solidGround.receiveShadow = true;
+
+    // Chargement de la texture
+    var textureLoader = new THREE.TextureLoader();
+    var texture = textureLoader.load('objet/tile-ext-border.jpg');
+	
+
+    // Appliquer la texture au matériau de l'objet
+    solidGround.material.map = texture;
+
+    // Définir les paramètres du matériau
+    solidGround.material.emissive.setHex(0x000000);
+    solidGround.material.ambient = new THREE.Color(0x000000);
+    solidGround.material.color = new THREE.Color(0x646464);
+
+    // Définir les paramètres de la texture
+    solidGround.material.shininess = 0.0;
+    solidGround.material.specular = new THREE.Color(0x000000);
+    solidGround.material.alphaMap = null;
+    solidGround.material.combine = THREE.MultiplyOperation;
+    solidGround.material.reflectivity = 0;
+    solidGround.material.refractionRatio = 0.98;
+    solidGround.material.depthTest = true;
+    solidGround.material.depthWrite = true;
+    solidGround.material.clipShadows = false;
+    solidGround.material.fog = true;
+
+    scene.add(solidGround);
+
+
+	scene.add(solidGround);
+
+	var solidGround = new THREE.Mesh(
+        new THREE.PlaneGeometry(2080, 200),
+        new THREE.MeshPhongMaterial({
+            polygonOffset: true,
+            polygonOffsetFactor: 1.0,
+            polygonOffsetUnits: 4.0,
+            receiveShadow: true,
+            specular: new THREE.Color(0x000000),
+            shininess: 0.0,
+            emissive: new THREE.Color(0x000000),
+            transparent: false,
+            opacity: 1.0,
+            illumination: 1,
+            specularMap: null,
+            alphaMap: null,
+            combine: THREE.MultiplyOperation,
+            reflectivity: 0,
+            refractionRatio: 0.98,
+            depthTest: true,
+            depthWrite: true,
+            clipShadows: false,
+            fog: true
+        })
+    );
+    solidGround.rotation.x = -Math.PI / 2;
+    solidGround.position.x = -450;
+    solidGround.position.z = 687;
+	solidGround.receiveShadow = true;
+
+    // Chargement de la texture
+    var textureLoader = new THREE.TextureLoader();
+    var texture = textureLoader.load('objet/tile-ext-border.jpg');
+	
+
+    // Appliquer la texture au matériau de l'objet
+    solidGround.material.map = texture;
+
+    // Définir les paramètres du matériau
+    solidGround.material.emissive.setHex(0x000000);
+    solidGround.material.ambient = new THREE.Color(0x000000);
+    solidGround.material.color = new THREE.Color(0x646464);
+
+    // Définir les paramètres de la texture
+    solidGround.material.shininess = 0.0;
+    solidGround.material.specular = new THREE.Color(0x000000);
+    solidGround.material.alphaMap = null;
+    solidGround.material.combine = THREE.MultiplyOperation;
+    solidGround.material.reflectivity = 0;
+    solidGround.material.refractionRatio = 0.98;
+    solidGround.material.depthTest = true;
+    solidGround.material.depthWrite = true;
+    solidGround.material.clipShadows = false;
+    solidGround.material.fog = true;
+
+    scene.add(solidGround);
+
+
+
 	
 }
-
-
-
-
-
 
 // Ajouter moi du brouillard
 function addFog() {
 	window.scene.fog = new THREE.FogExp2(0x808080, 0.00025);
 }
-
-
-
-
-
-
-
 
 
 
