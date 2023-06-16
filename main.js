@@ -20,10 +20,21 @@ import {Coordinates} from './lib/Coordinates.js';
 var camera, renderer;
 var cameraControls, effectController;
 var clock = new THREE.Clock();
-var cylinder, sphere, cube;
-var bevelRadius = 1.9;	// TODO: 2.0 causes some geometry bug.
-var aspectRatio;
-var eyeTargetScale;
+var aspectRatio; 
+let ambientLight;
+
+
+const settings = {
+    metalness: 1.0,
+    roughness: 0.4,
+    ambientIntensity: 0.2,
+    aoMapIntensity: 1.0,
+    envMapIntensity: 1.0,
+    displacementScale: 2.436143, // from original model
+    normalScale: 1.0
+};
+
+let mesh, material;
 
 //parametre du menu
 function setupGui() {
@@ -37,7 +48,53 @@ function setupGui() {
         camera.updateProjectionMatrix();
     }
     );
-}
+            //Pouvoir changer les valeurs de la normal map
+
+            gui.add( settings, 'metalness' ).min( 0 ).max( 1 ).onChange( function ( value ) {
+
+                material.metalness = value;
+
+            } );
+
+            gui.add( settings, 'roughness' ).min( 0 ).max( 1 ).onChange( function ( value ) {
+
+                material.roughness = value;
+
+            } );
+
+            gui.add( settings, 'aoMapIntensity' ).min( 0 ).max( 1 ).onChange( function ( value ) {
+
+                material.aoMapIntensity = value;
+
+            } );
+
+            gui.add( settings, 'ambientIntensity' ).min( 0 ).max( 1 ).onChange( function ( value ) {
+
+                ambientLight.intensity = value;
+
+            } );
+
+            gui.add( settings, 'envMapIntensity' ).min( 0 ).max( 3 ).onChange( function ( value ) {
+
+                material.envMapIntensity = value;
+
+            } );
+
+            gui.add( settings, 'displacementScale' ).min( 0 ).max( 3.0 ).onChange( function ( value ) {
+
+                material.displacementScale = value;
+
+            } );
+
+            gui.add( settings, 'normalScale' ).min( - 1 ).max( 1 ).onChange( function ( value ) {
+
+                material.normalScale.set( 1, - 1 ).multiplyScalar( value );
+
+            } );
+
+
+
+    }
 
 // Mets moi une skybox 
 function initSkyBox() {
@@ -87,7 +144,7 @@ function init() {
 
 	var startdir = new THREE.Vector3();
 	startdir.subVectors( camera.position, cameraControls.target );
-	eyeTargetScale = Math.tan(camera.fov*(Math.PI/180)/2)*startdir.length();
+
 
 	// décale la caméra sur la droite
 	camera.position.z += 300;
@@ -146,33 +203,52 @@ function init() {
    
 
    
-   // charge nageur.obj
-   var loader = new OBJLoader();
-   
-	loader.load('objet/swimmer.obj', function (object) {
+    // charge nageur.obj
+    const loader = new OBJLoader();
+    loader.load( 'objet/swimmer.obj', function ( group ) {
 
-		object.traverse( function ( object ) {
-			if ( object instanceof THREE.Mesh ) {
-				object.castShadow = true;
-				object.receiveShadow = true;
-			}
-		} );
-	   
-	   // Positionner le personnage
-	   object.position.set(-50, -50, 225)
-   
-	   // Pivote le 180°
-	   object.rotation.y = Math.PI
-   
-	   // Met le a plat sur le sol
-	   object.rotation.x = -Math.PI/2
-   
-	   // Oriente le de 90°
-	   object.rotation.z = Math.PI/2
+        const geometry = group.children[ 0 ].geometry;
+        geometry.center();
 
-	   window.scene.add(object);
-   
-   });
+        mesh = new THREE.Mesh( geometry, material );
+        mesh.position.set(-50, 20, 225);
+        mesh.rotation.y = Math.PI;
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.rotation.z = Math.PI / 2;
+        
+       
+        window.scene.add( mesh );
+
+    } );
+
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load( 'objet/swimming-pool-tiles.jpg' );
+    const normalMap = textureLoader.load( 'texture/normalmapnageur.png' );
+    const aoMap = textureLoader.load( 'texture/normalmapnageur.pngv' );
+    const displacementMap = textureLoader.load( 'texture/normalmapnageur.png' );
+
+    material = new THREE.MeshStandardMaterial( {
+
+					roughness: settings.roughness,
+					metalness: settings.metalness,
+
+					normalMap: normalMap,
+					normalScale: new THREE.Vector2( 1, - 1 ), // why does the normal map require negation in this case?
+
+                    aoMap: aoMap,
+					aoMapIntensity: 1,
+
+					displacementMap: displacementMap,
+					displacementScale: settings.displacementScale,
+					displacementBias: - 0.428408, // from original model
+
+                    texture: texture,
+
+					side: THREE.DoubleSide
+
+				} );
+    
+  
 
    // Charge moi un objet avec obj et mtlloader et applique lui une texture
 const mtlLoader = new MTLLoader()
@@ -216,7 +292,23 @@ mtlLoader.load(
     }
 )
 
+material = new THREE.MeshStandardMaterial( {
+
+    color: 0xc1c1c1,
+    roughness: settings.roughness,
+    metalness: settings.metalness,
+
+    normalMap: normalMap,
+    normalScale: new THREE.Vector2( 1, - 1 ), // why does the normal map require negation in this case?
+
+    side: THREE.DoubleSide
+
+} );
+
 }
+
+
+
 
 function drawHelpers() {
 	Coordinates.drawGrid({size:10000,scale:0.01} );
@@ -241,6 +333,8 @@ function fillScene() {
 	light.shadow.mapSize.height = 512;
 	light.shadow.camera.near = 1;
 	light.shadow.camera.far =2500;
+    ambientLight = new THREE.AmbientLight( 0xffffff, settings.ambientIntensity );
+	window.scene.add( ambientLight );
 
 	window.scene.add( light );
 
@@ -525,6 +619,7 @@ try {
 	animate();
 	initSkyBox();
 	addFog();
+
 
 } catch(e) {
 	var errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
