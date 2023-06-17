@@ -278,18 +278,7 @@ mtlLoader.load(
     }
 )
 
-material = new THREE.MeshStandardMaterial( {
 
-    color: 0xc1c1c1,
-    roughness: settings.roughness,
-    metalness: settings.metalness,
-
-    normalMap: normalMap,
-    normalScale: new THREE.Vector2( 1, - 1 ), // why does the normal map require negation in this case?
-
-    side: THREE.DoubleSide
-
-} );
 
 }
 
@@ -356,8 +345,25 @@ function fillScene() {
         }
     }
 
-
-
+    const mtlLoader = new MTLLoader()
+    mtlLoader.load('objet/Arbre2MTL.mtl', function (materials) {
+        materials.preload();
+        var objLoader = new OBJLoader();
+        objLoader.setMaterials(materials);
+    
+        objLoader.load('objet/Arbre2.obj', function (object) {
+            object.traverse( function ( object ) {
+                if ( object instanceof THREE.Mesh ) {
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                }
+            });
+            object.position.set( -1250, 0, -650 );
+            object.scale.set( 100, 100, 100 );
+            object.rotation.y = 180;
+            window.scene.add(object);
+        });
+    });
 
 	
 	var helper = new THREE.CameraHelper( light.shadow.camera );
