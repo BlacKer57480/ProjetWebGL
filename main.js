@@ -4,12 +4,20 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { Reflector } from 'three/addons/objects/Reflector.js';
-
+import {Coordinates} from './lib/Coordinates.js';
 import {dat} from './lib/dat.gui.min.js';
-var camera, renderer;
 var windowScale;
 window.scene = new THREE.Scene();
-import {Coordinates} from './lib/Coordinates.js';
+
+
+var camera, renderer;
+var cameraControls, effectController;
+var clock = new THREE.Clock();
+var aspectRatio, mirrorCam, mirrorCube ; 
+let ambientLight;
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 1024, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
+
+
 
 "use strict"; // good practice - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,11 +25,7 @@ import {Coordinates} from './lib/Coordinates.js';
 ////////////////////////////////////////////////////////////////////////////////
 /*global THREE, Coordinates, document, window, $*/
 
-var camera, renderer;
-var cameraControls, effectController;
-var clock = new THREE.Clock();
-var aspectRatio, mirrorCam; 
-let ambientLight;
+
 
 
 const settings = {
@@ -118,10 +122,6 @@ function init() {
 	camera = new THREE.PerspectiveCamera( 45, aspectRatio, 10, 10000 );
 	camera.position.set( 0, 500, 600 );
 
-    // Ajoute une mirrorCam pour le mirroir
-    mirrorCam = new THREE.CubeCamera( 0.1, 5000, 512 );
-    mirrorCam.position.set( 0, 500, -600 );
-    window;scene.add( mirrorCam );
 	// CONTROLS
 	cameraControls = new OrbitControls(camera, renderer.domElement);
 	cameraControls.target.set(0,0,0);
@@ -134,6 +134,10 @@ function init() {
 
 	// décale la caméra sur la droite
 	camera.position.z += 300;
+
+    //Mets moi une sphere
+    
+
 
 
 
@@ -318,6 +322,43 @@ function fillScene() {
 
 	window.scene.add( light );
 
+    // Mirroir
+    var cubeGeom = new THREE.BoxGeometry(1000, 300, 1);
+
+    mirrorCam = new THREE.CubeCamera( 1, 1000, cubeRenderTarget   );
+    mirrorCam.position.set(0, 500, -400); 
+    scene.add(mirrorCam);
+
+
+    var mirrorCubeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeRenderTarget.texture } );
+    mirrorCube = new THREE.Mesh( cubeGeom, mirrorCubeMaterial );
+    mirrorCube.position.set(0, +150, -487);
+    scene.add(mirrorCube);
+
+    // Sprite
+    var disk = new THREE.TextureLoader().load('texture/oiseau.png');
+    var material = new THREE.SpriteMaterial({ map: disk });
+    material.color.setHSL(0.0, 0.0, 0.0)
+    for (var i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            for (let k = 0; k < 8; k++) {
+                var particles = new THREE.Sprite(material);
+                var vertex = new THREE.Vector3();
+                // accept the point only if it's in the sphere
+                vertex.x = -1000 + Math.random() * 10 * 100 * k;
+                vertex.y = -1000 + Math.random() * 10 * 100 * j;
+                vertex.z = -1000 + Math.random() * 10 * 100 * i;
+                particles.scale.set(35, 35, 35);
+                particles.position.x = vertex.x;
+                particles.position.y = vertex.y;
+                particles.position.z = vertex.z;
+                scene.add(particles);
+            }
+        }
+    }
+
+
+
 
 	
 	var helper = new THREE.CameraHelper( light.shadow.camera );
@@ -336,7 +377,7 @@ function fillScene() {
             specular: new THREE.Color(0x000000),
             shininess: 0.0,
             emissive: new THREE.Color(0x000000),
-            transparent: false,
+            transparent: true,
             opacity: 1.0,
             illumination: 1,
             specularMap: null,
@@ -584,6 +625,9 @@ function animate() {
 
 //rendu
 function render() {
+    mirrorCam.visible = false;
+    mirrorCam.update( renderer, scene );
+    mirrorCam.visible = true;
 	var delta = clock.getDelta();
 	cameraControls.update(delta);
 	renderer.render(window.scene, camera);
