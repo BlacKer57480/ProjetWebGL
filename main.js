@@ -338,13 +338,12 @@ function fillScene() {
     // Sprite
     var disk = new THREE.TextureLoader().load('texture/oiseau.png');
     var material = new THREE.SpriteMaterial({ map: disk });
-    material.color.setHSL(0.0, 0.0, 0.0)
+    material.color.setHSL(10.0, 10.0, 10.0)
     for (var i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             for (let k = 0; k < 8; k++) {
                 var particles = new THREE.Sprite(material);
                 var vertex = new THREE.Vector3();
-                // accept the point only if it's in the sphere
                 vertex.x = -1000 + Math.random() * 10 * 100 * k;
                 vertex.y = -1000 + Math.random() * 10 * 100 * j;
                 vertex.z = -1000 + Math.random() * 10 * 100 * i;
