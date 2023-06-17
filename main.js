@@ -397,7 +397,7 @@ function fillScene() {
 
     // Chargement de la texture
     var textureLoader = new THREE.TextureLoader();
-    var texture = textureLoader.load('objet/tile-ext-border.jpg');
+    var texture = textureLoader.load('texture/tileable_wood_planks_texture.jpg');
 
 
     // Appliquer la texture au matériau de l'objet
@@ -423,7 +423,7 @@ function fillScene() {
     scene.add(solidGround);
 
 
-	var solidGround = new THREE.Mesh(
+    var solidGround = new THREE.Mesh(
         new THREE.PlaneGeometry(200, 1000),
         new THREE.MeshPhongMaterial({
             polygonOffset: true,
@@ -450,37 +450,45 @@ function fillScene() {
     solidGround.rotation.x = -Math.PI / 2;
     solidGround.position.x = -1400;
     solidGround.position.z = 110;
-	solidGround.receiveShadow = true;
-
-    // Chargement de la texture
+    solidGround.receiveShadow = true;
+    
+    // Chargement de la texture de base
     var textureLoader = new THREE.TextureLoader();
-    var texture = textureLoader.load('objet/tile-ext-border.jpg');
-	
-
-    // Appliquer la texture au matériau de l'objet
+    var texture = textureLoader.load('texture/tileable_wood_planks_texture.jpg');
+    
+    // Appliquer la texture de base au matériau de l'objet
     solidGround.material.map = texture;
-
+    
+    // Chargement de la texture de la carte spéculaire
+    var specularMapTexture = textureLoader.load('objet/tileable_wood_planks_texture_SPECULAR.jpg');
+    
+    // Appliquer la texture de la carte spéculaire au matériau de l'objet
+    solidGround.material.specularMap = specularMapTexture;
+    
+    // Modifier les paramètres de la carte spéculaire
+    solidGround.material.specular = new THREE.Color(0xffffff);
+    solidGround.material.shininess = 0;
+    solidGround.material.reflectivity = 1;
+    
     // Définir les paramètres du matériau
     solidGround.material.emissive.setHex(0x000000);
     solidGround.material.ambient = new THREE.Color(0x000000);
     solidGround.material.color = new THREE.Color(0x646464);
-
+    
     // Définir les paramètres de la texture
-    solidGround.material.shininess = 0.0;
-    solidGround.material.specular = new THREE.Color(0x000000);
     solidGround.material.alphaMap = null;
     solidGround.material.combine = THREE.MultiplyOperation;
-    solidGround.material.reflectivity = 0;
     solidGround.material.refractionRatio = 0.98;
     solidGround.material.depthTest = true;
     solidGround.material.depthWrite = true;
     solidGround.material.clipShadows = false;
     solidGround.material.fog = true;
-
+    
     scene.add(solidGround);
+    
 
-	var solidGround = new THREE.Mesh(
-        new THREE.PlaneGeometry(2080, 200),
+    var solidGround = new THREE.Mesh(
+        new THREE.PlaneGeometry(200,2080),
         new THREE.MeshPhongMaterial({
             polygonOffset: true,
             polygonOffsetFactor: 1.0,
@@ -492,7 +500,6 @@ function fillScene() {
             transparent: false,
             opacity: 1.0,
             illumination: 1,
-            specularMap: null,
             alphaMap: null,
             combine: THREE.MultiplyOperation,
             reflectivity: 0,
@@ -505,25 +512,36 @@ function fillScene() {
     );
     solidGround.rotation.x = -Math.PI / 2;
     solidGround.position.x = -450;
-    solidGround.position.z = -487;
-	solidGround.receiveShadow = true;
-
-    // Chargement de la texture
+    solidGround.position.z = -485;
+    solidGround.receiveShadow = true;
+    solidGround.rotation.z = -Math.PI / 2;
+    
+    // Chargement de la texture de base
     var textureLoader = new THREE.TextureLoader();
-    var texture = textureLoader.load('objet/tile-ext-border.jpg');
-	
-
-    // Appliquer la texture au matériau de l'objet
+    var texture = textureLoader.load('texture/tileable_wood_planks_texture.jpg');
+    
+    // Appliquer la texture de base au matériau de l'objet
     solidGround.material.map = texture;
 
+    // Chargement de la texture de la carte spéculaire
+    var specularMapTexture = textureLoader.load('objet/tileable_wood_planks_texture_SPECULAR.jpg');
+
+    // Appliquer la texture de la carte spéculaire au matériau de l'objet
+    solidGround.material.specularMap = specularMapTexture;
+    
+    // Chargement de la texture de la carte spéculaire
+    var specularMapTexture = textureLoader.load('objet/tileable_wood_planks_texture_SPECULAR.jpg');
+    
+    // Appliquer la texture de la carte spéculaire au matériau de l'objet
+    solidGround.material.specularMap = specularMapTexture;
+    
     // Définir les paramètres du matériau
     solidGround.material.emissive.setHex(0x000000);
     solidGround.material.ambient = new THREE.Color(0x000000);
     solidGround.material.color = new THREE.Color(0x646464);
-
+    
     // Définir les paramètres de la texture
     solidGround.material.shininess = 0.0;
-    solidGround.material.specular = new THREE.Color(0x000000);
     solidGround.material.alphaMap = null;
     solidGround.material.combine = THREE.MultiplyOperation;
     solidGround.material.reflectivity = 0;
@@ -532,14 +550,11 @@ function fillScene() {
     solidGround.material.depthWrite = true;
     solidGround.material.clipShadows = false;
     solidGround.material.fog = true;
-
+    
     scene.add(solidGround);
 
-
-	scene.add(solidGround);
-
 	var solidGround = new THREE.Mesh(
-        new THREE.PlaneGeometry(2080, 200),
+        new THREE.PlaneGeometry(200,2080),
         new THREE.MeshPhongMaterial({
             polygonOffset: true,
             polygonOffsetFactor: 1.0,
@@ -566,14 +581,21 @@ function fillScene() {
     solidGround.position.x = -450;
     solidGround.position.z = 687;
 	solidGround.receiveShadow = true;
+    solidGround.rotation.z = -Math.PI / 2;
+
 
     // Chargement de la texture
     var textureLoader = new THREE.TextureLoader();
-    var texture = textureLoader.load('objet/tile-ext-border.jpg');
-	
+    var texture = textureLoader.load('texture/tileable_wood_planks_texture.jpg');
 
     // Appliquer la texture au matériau de l'objet
     solidGround.material.map = texture;
+
+    // Chargement de la texture de la carte spéculaire
+    var specularMapTexture = textureLoader.load('objet/tileable_wood_planks_texture_SPECULAR.jpg');
+
+    // Appliquer la texture de la carte spéculaire au matériau de l'objet
+    solidGround.material.specularMap = specularMapTexture;
 
     // Définir les paramètres du matériau
     solidGround.material.emissive.setHex(0x000000);
