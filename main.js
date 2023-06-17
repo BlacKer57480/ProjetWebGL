@@ -20,7 +20,7 @@ import {Coordinates} from './lib/Coordinates.js';
 var camera, renderer;
 var cameraControls, effectController;
 var clock = new THREE.Clock();
-var aspectRatio; 
+var aspectRatio, mirrorCam; 
 let ambientLight;
 
 
@@ -62,27 +62,9 @@ function setupGui() {
 
             } );
 
-            gui.add( settings, 'aoMapIntensity' ).min( 0 ).max( 1 ).onChange( function ( value ) {
-
-                material.aoMapIntensity = value;
-
-            } );
-
             gui.add( settings, 'ambientIntensity' ).min( 0 ).max( 1 ).onChange( function ( value ) {
 
                 ambientLight.intensity = value;
-
-            } );
-
-            gui.add( settings, 'envMapIntensity' ).min( 0 ).max( 3 ).onChange( function ( value ) {
-
-                material.envMapIntensity = value;
-
-            } );
-
-            gui.add( settings, 'displacementScale' ).min( 0 ).max( 3.0 ).onChange( function ( value ) {
-
-                material.displacementScale = value;
 
             } );
 
@@ -136,6 +118,10 @@ function init() {
 	camera = new THREE.PerspectiveCamera( 45, aspectRatio, 10, 10000 );
 	camera.position.set( 0, 500, 600 );
 
+    // Ajoute une mirrorCam pour le mirroir
+    mirrorCam = new THREE.CubeCamera( 0.1, 5000, 512 );
+    mirrorCam.position.set( 0, 500, -600 );
+    window;scene.add( mirrorCam );
 	// CONTROLS
 	cameraControls = new OrbitControls(camera, renderer.domElement);
 	cameraControls.target.set(0,0,0);
@@ -209,13 +195,17 @@ function init() {
 
         const geometry = group.children[ 0 ].geometry;
         geometry.center();
-
         mesh = new THREE.Mesh( geometry, material );
-        mesh.position.set(-50, 20, 225);
+        mesh.position.set(-50, -30, 225);
         mesh.rotation.y = Math.PI;
         mesh.rotation.x = -Math.PI / 2;
         mesh.rotation.z = Math.PI / 2;
-        
+        mesh.traverse( function ( object ) {
+            if ( object instanceof THREE.Mesh ) {
+                object.castShadow = true;
+                object.receiveShadow = true;
+            }
+        } );
        
         window.scene.add( mesh );
 
@@ -224,29 +214,21 @@ function init() {
     const textureLoader = new THREE.TextureLoader();
     const texture = textureLoader.load( 'objet/swimming-pool-tiles.jpg' );
     const normalMap = textureLoader.load( 'texture/normalmapnageur.png' );
-    const aoMap = textureLoader.load( 'texture/normalmapnageur.pngv' );
-    const displacementMap = textureLoader.load( 'texture/normalmapnageur.png' );
+
 
     material = new THREE.MeshStandardMaterial( {
 
-					roughness: settings.roughness,
-					metalness: settings.metalness,
+        roughness: settings.roughness,
+        metalness: settings.metalness,
 
-					normalMap: normalMap,
-					normalScale: new THREE.Vector2( 1, - 1 ), // why does the normal map require negation in this case?
+        normalMap: normalMap,
+        normalScale: new THREE.Vector2( 1, - 1 ), // why does the normal map require negation in this case?
 
-                    aoMap: aoMap,
-					aoMapIntensity: 1,
+        texture: texture,
 
-					displacementMap: displacementMap,
-					displacementScale: settings.displacementScale,
-					displacementBias: - 0.428408, // from original model
+        side: THREE.DoubleSide
 
-                    texture: texture,
-
-					side: THREE.DoubleSide
-
-				} );
+} );
     
   
 
@@ -306,8 +288,6 @@ material = new THREE.MeshStandardMaterial( {
 } );
 
 }
-
-
 
 
 function drawHelpers() {
@@ -612,14 +592,14 @@ function render() {
 //initialisation
 try {
 	init();
-	fillScene();
+    fillScene();
 	setupGui();
 	drawHelpers();
 	addToDOM();
 	animate();
 	initSkyBox();
 	addFog();
-
+    
 
 } catch(e) {
 	var errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
