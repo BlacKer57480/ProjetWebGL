@@ -52,35 +52,57 @@ function setupGui() {
         camera.updateProjectionMatrix();
     }
     );
-            //Pouvoir changer les valeurs de la normal map
 
-            gui.add( settings, 'metalness' ).min( 0 ).max( 1 ).onChange( function ( value ) {
+    //Pouvoir switcher entre les deux types de caméra
+    effectController.cam = "Normal Cam";
+    gui.add( effectController, "cam", [  "Normal Cam" ,"MirrorCam"] ).name("Camera Type").onChange( function() {
+        if (effectController.cam == "Normal Cam") {
+            // Revient sur la caméra de base
+            camera = new THREE.PerspectiveCamera( 45, aspectRatio, 10, 10000 );
+            camera.position.set( 0, 500, 900 );
+            cameraControls = new OrbitControls(camera, renderer.domElement);
+            cameraControls.target.set(0,0,0);
+            cameraControls.update();
+        }
+        else {
+            camera = new THREE.PerspectiveCamera( 45, aspectRatio, 10, 10000 );
+            camera.position.set( 0, 500, -400 );
+            cameraControls = new OrbitControls(camera, renderer.domElement);
+            cameraControls.target.set(0,0,0);
+            cameraControls.update();
+        }
+    }
+    );
 
-                material.metalness = value;
+    //Pouvoir changer les valeurs de la normal map
 
-            } );
+    gui.add( settings, 'metalness' ).min( 0 ).max( 1 ).onChange( function ( value ) {
 
-            gui.add( settings, 'roughness' ).min( 0 ).max( 1 ).onChange( function ( value ) {
+        material.metalness = value;
 
-                material.roughness = value;
+    } );
 
-            } );
+    gui.add( settings, 'roughness' ).min( 0 ).max( 1 ).onChange( function ( value ) {
 
-            gui.add( settings, 'ambientIntensity' ).min( 0 ).max( 1 ).onChange( function ( value ) {
+        material.roughness = value;
 
-                ambientLight.intensity = value;
+    } );
 
-            } );
+    gui.add( settings, 'ambientIntensity' ).min( 0 ).max( 1 ).onChange( function ( value ) {
 
-            gui.add( settings, 'normalScale' ).min( - 1 ).max( 1 ).onChange( function ( value ) {
+        ambientLight.intensity = value;
 
-                material.normalScale.set( 1, - 1 ).multiplyScalar( value );
+    } );
 
-            } );
+    gui.add( settings, 'normalScale' ).min( - 1 ).max( 1 ).onChange( function ( value ) {
 
+        material.normalScale.set( 1, - 1 ).multiplyScalar( value );
+
+    } );
 
 
     }
+
 
 // Mets moi une skybox 
 function initSkyBox() {
