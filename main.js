@@ -116,24 +116,26 @@ function initSkyBox() {
 
 //initialisation de la caméra
 function init() {
-	var canvasWidth = 1000;
-	var canvasHeight = 500;
+	var canvasWidth = 846;
+	var canvasHeight = 494;
 	// For grading the window is fixed in size; here's general code:
 	//var canvasWidth = window.innerWidth;
 	//var canvasHeight = window.innerHeight;
 
 	// RENDERER
-	renderer = new THREE.WebGLRenderer( { antialias: true } );
-	renderer.gammaInput = true;
-	renderer.gammaOutput = true;
-	renderer.setSize(canvasWidth, canvasHeight);
-	renderer.setClearColor( 0x808080, 1.0 );
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.gammaInput = true;
+    renderer.gammaOutput = true;    
+    renderer.shadowMap.enabled = true;
+    renderer.setSize(canvasWidth, canvasHeight);
+    renderer.setClearColor(0xAAAAAA, 1.0);
 	// Ajoute de l'ombre
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	renderer.shadowMapSoft = true;
 	renderer.shadowMapAutoUpdate = true;
 	renderer.shadowMap.needsUpdate = true;
+    
 
 
 
@@ -197,9 +199,7 @@ function init() {
         side: THREE.DoubleSide
 
 } );
-
-
-    
+   
 
 }
 
@@ -636,10 +636,7 @@ mtlLoader.load(
 
     scene.add(solidGround);
 
-
-
-	
-}
+} 
 
 // Ajouter moi du brouillard
 function addFog() {
@@ -650,12 +647,13 @@ function addFog() {
 
 //ajout de la scène au DOM
 function addToDOM() {
-	var container = document.getElementById('webGL');
-	var canvas = container.getElementsByTagName('canvas');
-	if (canvas.length>0) {
-		container.removeChild(canvas[0]);
-	}
-	container.appendChild( renderer.domElement );
+	 var container = document.getElementById('webGL');
+	 var canvas = container.getElementsByTagName('canvas');
+	 if (canvas.length>0) {
+	 	container.removeChild(canvas[0]);
+	 }
+	 container.appendChild( renderer.domElement );
+    
 }
 
 //animation
@@ -674,6 +672,7 @@ function render() {
 	renderer.render(window.scene, camera);
 }
 
+
 //initialisation
 try {
 	init();
@@ -690,8 +689,3 @@ try {
 	var errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
 	$('#webGL').append(errorReport+e);
 }
-
-
-var container = document.createElement( 'div' );
-document.body.appendChild( container );
-container.appendChild( renderer.domElement );
