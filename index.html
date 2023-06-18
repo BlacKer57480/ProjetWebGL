@@ -19,53 +19,51 @@
     
 
     <div id="container">
-        <!-- Le reste de votre contenu HTML -->
-        <h2> Peinture </h2>
-        <div id="peinture"> <img src="img.jpg" height="40%" width="40%"> </div>
-        <!-- Rendu WebGl -->
-        <h2> Représentation 3D </h2>
-        <div id="webGL"></div>
-        <!-- Explications -->
-        <h3> Objectifs </h3>
-        <p> J'ai essayé de représenter cette peinture en 3D en rajoutant d'autres choses. J'ai ajouté du brouillard que nous pouvons aperçevoir en s'éloignant des éléments de la scène. J'ai ajouté une bulle d'eau à travers laquelle nous pouvons voir la scène. Cette bulle se déplace en faisant une rotation autour de l'axe y. Si nous sélectionnons le mode "Bulle View", la caméra sera positionnée devant cette bulle. Ensuite si nous lançons l'animation en sélectionnant "Run animation", la caméra et la bulle se déplace. J'ai créé la coupe à fruits, la table, le mur, le verre d'eau. </p>
-        
-        <h3> Coupe à fruits </h3>
-        <p> J'ai créé la coupe à fruits en utilisant une <a href="https://threejs.org/docs/index.html?q=LatheGeometry#api/en/geometries/LatheGeometry"> LatheGeometry </a> qui crée une maille (mesh) qui a une symétrie axiale ressemblant à celle d'un vase. Je lui ai appliquée une texture avec du bruit générée par deux shaders (vertex, fragment). La couleur diffuse est calculée par la formule suivante : 1./2. + 1./2. * sin [k1*.x + 10.* bruit(k2.x,k2.z)] avec k1 un facteur allant de 0.01 à 1.0 et k2 un facteur allant de 0.001 à 0.1 que nous pouvons faire varier grâce au GUI.</p>
-        
-        <h3> Verre d'eau </h3>
-        <p> J'ai créé le verre d'eau en utilisant des cylindres (CylinderGeometry) et une demi-sphère (SphereGeometry). Je lui ai appliqué une texture transparente. J'ai voulu ajouter 
-        une texture qui rendrait l'eau plus réaliste en utilisant les classes Refractor et Reflector de THREE js mais cela ralentit l'animation. J'ai donc commenté cette partie dans le code et j'ai ajouté une demi-sphère avec une texture de couleur bleue. </p>
-        
-        <h3> La bulle d'eau </h3>
-        <p> J'ai créé une bulle d'eau en appliquant le shader WaterRefractionShader à une sphère. J'ai utilisé la classe Refractor de THREE.js pour le faire. Si nous nous rapprochons de cette bulle, nous pouvons voir qu'il y a des turbulences à sa surface comme dans la réalité. </p>
-        
-        <h3> Textures </h3>
-        <p> J'ai appliqué des textures à mes objets 3D et aux autres éléments de la scène. Pour les pommes, les pêches, la table et le couteau, j'ai téléchargé de textures du site <a href="https://www.textures.com/library"> textures.com </a>. J'ai découpé ces textures pour ne pas prendre les parties blanches qui se trouvaient sur celles-ci. Pour le mur, j'ai découpé la peinture pour avoir la texture.</p>
-        
-        <h3> Ombrages </h3>
-        <p> J'ai mis toutes les objets qui sont sur la table dans un Objet 3D (THREE.Object3D). Ainsi j'ai pu plus facilement faire en sorte qu'ils reçoivent et/ou émettent une ombre. C'est pour cela que les fonctions qui créent les fruits et les autres éléments de la peinture ont comme paramètre "fruit" ou "autresElements". Après j'ai fait cela dans la fonction "peinture()". </p>
-        
-        <h3> Tweening </h3>
-        <p> Six secondes après le chargement de la scène, un des raisins tombe de la coupe à fruits et rebondit sur la table. Il revient à sa position initiale en faisant le chemin inverse. J'ai créé deux instances de TWEEN et je les ai liées avec la fonction "chain()". L'animation devrait s'effectuer à l'infini mais après la première itération, on dirait qu'il n'y a plus d'interpolation entre les positions initiale et finale. Donc le raisin passe directement de la position initiale à la position finale. </p>
-        
-        <h3> Animation </h3>
-        <p> Je déplace la bulle d'eau en faisant une rotation autour de l'axe y. Je fais varier la variable "angle" d'un pas "pasRotation" dans le code. Il y a deux options : </p>
-        <ul>
-            <li> Caméra fixe </li>
-            <p> Dans l'onglet "Bulle d'eau" du menu de contrôle, si nous lançons l'animation en cochant "Run animation", la bulle va se déplacer mais la caméra sera toujours à la même position. </p>
-            
-            <li> Caméra mouvante </li>
-            <p> En cochant la "Bulle view", la caméra se positionne devant la bulle. En lançant l'animation, la caméra effectue la même rotation que la bulle. L'objectif de la caméra est fixé vers la table si on coche la case "Lookat table". Sinon, elle garde les mêmes paramètres utilisés à l'initialisation. Si on coche la case "Whole bubble", la bulle recouvre tout l'objectif de la caméra. À un moment au niveau de la rotation, nous n'arrivons plus à voir à travers la bulle. C'est peut-être à cause de la coupure de la texture sur la sphère. Pour y remédier, la bulle fait aussi une rotation autour d'elle-même en fonction de l'angle de rotation. </p>
-        </ul>
-        
-        <h3> Difficultés </h3>
-        <p> Je trace les axes (x, y, z) en cochant la case "Show axes". Je n'arrive pas à les enlever en décochant cette case.</p>
-        
-        <h3> Légèreté du dossier </h3>
-        <p> Je n'ai pas pu faire en sorte que le dossier soit inférieur à 2Mo parce que j'ai beaucoup d'objets 3D à importer. J'ai réduit la taille de ces objects en utilisant la fonction decimate de Blender. Mais cela n'a pas suffit. Pour certains objets (les pêches), je ne pouvais plus réduire le nombre de polygones.</p>
+        <div>
+            <h3>Modèle</h3>
+            <div id="webGL">
+                <p id="axes_legend" style="position: absolute; margin-top: -6px; margin-left: 5px"><span id="x">x</span> <span id="y">y</span> <span id="z">z</span></p>
+            </div>
+        </div>
+
+        <div>
+            <h3>Originale</h3>
+
+            <img src="img.jpg" width="846" height="494" alt="Oeuvre d'art nommée The Great Wave off Kanagawa"/>
         </div>
     </div>
-    </div>
+    <!-- Explication technique -->
+    <hr style="width: 70%; margin: 20px auto;">
+    <h3>Explications Techniques</h3>
+    <p style="font-size: 22px; text-align: left; padding-left: 60px">
+        Utilisation de Three.js pour faire un modèle 3D d'une œuvre d'art.<br>
+        J'utilise dat.gui pour permettre la modification de certaines parties de l'œuvre en temps réel<br>
+        Les objets tels que la piscine ainsi que les deux personnages au premier plan sont chargés à l'aide de la bibliothèque MTLoader, ce qui permet d'obtenir des personnages avec une texture intégrée directement.<br> <br>
+
+        <b>Pour commencer je vais découper mon tableau en plusieurs étapes : <br></b>
+        Dans un premier temps j'ai effectuer des recherches pour implémenter une piscine dans ma scène, j'ai donc trouvé un modèle 3D de piscine sur le site que j'ai ensuite importé dans ma scène.<br>
+        Puis ensuite j'ai trouver deux personnages, un homme et une femme, que j'ai aussi importé dans ma scène.<br>
+        Puis une fois ça importer j'ai donc décider de mettre une skybox pour avoir un fond de montagne comme sur le tableau.<br>
+        Ensuite j'ai mis une lumière pour éclairer ma scène et donc pour pouvoir avoir mes ombres.<br>
+        Les ombres on étaient assez compliquer pour moi de les implémenter, j'ai du passé par la fonction object.travers pour pouvoir avoir mes ombres.<br>
+        Ensuite une fois les ombres faites j'ai décider de mettre un sol pour pouvoir avoir un rendu plus réaliste tout autour de la piscine j'ai donc ajouter 4 sols.<br>
+        Sur lesquelles j'ai appliquer une texture de parquet de piscine ou j'ai aussi appliquer une specular map.<br>
+        Ensuite il me fallait un nageur, que j'ai mis beaucoup de temps à trouver car il était tous payant sur internet donc j'ai pris le premier que j'ai trouver.<br>
+        Je lui ai donc ensuite appliqué une texture ainsi qu'une normal map qui peut être controlé avec dat.gui.<br>
+        Puis un arbre avec l'option transparence pour pouvoir voir à travers les feuilles.<br>
+        Ensuite j'ai décider d'ajouter des sprites pour pouvoir avoir des oiseaux dans mon tableau à fin de rendre le tableau plus chalereux.<br>
+        Puis j'ai ajouté un effet de brouillard pour pouvoir avoir un effet de profondeur.<br>
+        Ensuite j'ai ajouter un miroir pour pouvoir avoir un effet de reflet sur tout la scène j'ai donc ajouté une caméra que j'ai appliqué sur le mur que j'ai crée pour avoir un bel effet de miroir.<br>
+
+
+
+        <br>
+        
+        <hr>
+        <p> <a href="https://www.linkedin.com/in/ugo-claus-22b47b253/">Linkedin</a> | CLAUS Ugo | <a href="https://github.com/BlacKer57480">Github</a></p>
+
+    </p>
+
     <script class="center" type="module" src="main.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </body>

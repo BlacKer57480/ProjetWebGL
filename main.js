@@ -15,7 +15,7 @@ var cameraControls, effectController;
 var clock = new THREE.Clock();
 var aspectRatio, mirrorCam, mirrorCube ; 
 let ambientLight;
-const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 1024, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 1024, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
 
 
 
