@@ -132,68 +132,9 @@ function init() {
 	startdir.subVectors( camera.position, cameraControls.target );
 
 
-	// décale la caméra sur la droite
 	camera.position.z += 300;
 
-    //Mets moi une sphere
-    
-
-
-
-
-    // Premier perso
-
-    const fbxLoader = new FBXLoader()
-    fbxLoader.load(
-    'objet/rp_dennis_posed_004_30k.fbx',
-    (object) => {
-        object.traverse( function ( object ) {
-            if ( object instanceof THREE.Mesh ) {
-                object.castShadow = true;
-                object.receiveShadow = true;
-            }
-        } );
-        object.position.set(300, 0, 300)
-	   object.rotation.y = Math.PI
-        window.scene.add(object)
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-        console.log(error)
-    }
-)
-
-    // Deuxime perso
-
-    fbxLoader.load(
-    'objet/rp_mei_posed_001_30k.fbx',
-    (object) => {
-        object.traverse( function ( object ) {
-            if ( object instanceof THREE.Mesh ) {
-                object.castShadow = true;
-                object.receiveShadow = true;
-            }
-        } );
-        object.position.set(-50, 0, 550)
-   
-        // Pivote le 90°
-        object.rotation.y = Math.PI/2
-        window.scene.add(object)
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-        console.log(error)
-    }
-    )
-
-   
-
-   
-    // charge nageur.obj
+    //Nageur.obj
     const loader = new OBJLoader();
     loader.load( 'objet/swimmer.obj', function ( group ) {
 
@@ -210,16 +151,17 @@ function init() {
                 object.receiveShadow = true;
             }
         } );
-       
+        
         window.scene.add( mesh );
 
     } );
 
-    const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load( 'objet/swimming-pool-tiles.jpg' );
-    const normalMap = textureLoader.load( 'texture/normalmapnageur.png' );
+    // Normal map de l'objet nageur
+    var textureLoader = new THREE.TextureLoader();
+    var texture = textureLoader.load( 'objet/swimming-pool-tiles.jpg' );
+    var normalMap = textureLoader.load( 'texture/normalmapnageur.png' );
 
-
+    // Material de l'objet nageur
     material = new THREE.MeshStandardMaterial( {
 
         roughness: settings.roughness,
@@ -233,56 +175,13 @@ function init() {
         side: THREE.DoubleSide
 
 } );
+
+
     
-  
-
-   // Charge moi un objet avec obj et mtlloader et applique lui une texture
-const mtlLoader = new MTLLoader()
-mtlLoader.load(
-    'objet/swimming-pool.mtl',
-    (materials) => {
-        materials.preload()
-        console.log(materials)
-         const objLoader = new OBJLoader()
-         objLoader.setMaterials(materials)
-         objLoader.load(
-            'objet/swimming-pool.obj',
-             (object) => {
-				object.traverse( function ( object ) {
-					if ( object instanceof THREE.Mesh ) {
-						object.castShadow = true;
-						object.receiveShadow = true;
-					}
-				} );
-                object.rotation.y = Math.PI
-                object.position.x = -800
-                object.position.y = -172
-                object.children[0].material.envMap = window.scene.background
-                object.children[0].material.envMapIntensity = 0.5
-				object.receiveShadow = true;
-                 scene.add(object)
-             },
-             (xhr) => {
-                 console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-             },
-             (error) => {
-                 console.log('An error happened')
-             }
-         )
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-        console.log('An error happened')
-    }
-)
-
-
 
 }
 
-
+//Fonction DrawHelpers
 function drawHelpers() {
 	Coordinates.drawGrid({size:10000,scale:0.01} );
 }
@@ -290,6 +189,7 @@ function drawHelpers() {
 //ajout de la scène
 function fillScene() {
 	window.scene = new THREE.Scene();
+    const mtlLoader = new MTLLoader()
 
 	// LIGHTS
 
@@ -345,7 +245,96 @@ function fillScene() {
         }
     }
 
-    const mtlLoader = new MTLLoader()
+        // Premier perso
+        const fbxLoader = new FBXLoader()
+        fbxLoader.load(
+        'objet/rp_dennis_posed_004_30k.fbx',
+        (object) => {
+            object.traverse( function ( object ) {
+                if ( object instanceof THREE.Mesh ) {
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                }
+            } );
+            object.position.set(300, 0, 300)
+           object.rotation.y = Math.PI
+            window.scene.add(object)
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+        },
+        (error) => {
+            console.log(error)
+        }
+    )
+    
+        // Deuxime perso
+        fbxLoader.load(
+        'objet/rp_mei_posed_001_30k.fbx',
+        (object) => {
+            object.traverse( function ( object ) {
+                if ( object instanceof THREE.Mesh ) {
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                }
+            } );
+            object.position.set(-50, 0, 550)
+       
+            // Pivote le 90°
+            object.rotation.y = Math.PI/2
+            window.scene.add(object)
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+        },
+        (error) => {
+            console.log(error)
+        }
+        )
+
+
+    //Piscine
+mtlLoader.load(
+    'objet/swimming-pool.mtl',
+    (materials) => {
+        materials.preload()
+        console.log(materials)
+         const objLoader = new OBJLoader()
+         objLoader.setMaterials(materials)
+         objLoader.load(
+            'objet/swimming-pool.obj',
+             (object) => {
+				object.traverse( function ( object ) {
+					if ( object instanceof THREE.Mesh ) {
+						object.castShadow = true;
+						object.receiveShadow = true;
+					}
+				} );
+                object.rotation.y = Math.PI
+                object.position.x = -800
+                object.position.y = -172
+                object.children[0].material.envMap = window.scene.background
+                object.children[0].material.envMapIntensity = 0.5
+				object.receiveShadow = true;
+                 scene.add(object)
+             },
+             (xhr) => {
+                 console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+             },
+             (error) => {
+                 console.log('An error happened')
+             }
+         )
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log('An error happened')
+    }
+)
+
+    // Ajout de l'arbre
     mtlLoader.load('objet/Arbre2MTL.mtl', function (materials) {
         materials.preload();
         var objLoader = new OBJLoader();
@@ -365,7 +354,7 @@ function fillScene() {
         });
     });
 
-	
+	//Ajout du 1er sol
 	var helper = new THREE.CameraHelper( light.shadow.camera );
 	window.scene.add( helper );
 
@@ -425,10 +414,9 @@ function fillScene() {
     solidGround.material.depthWrite = true;
     solidGround.material.clipShadows = false;
     solidGround.material.fog = true;
-
     scene.add(solidGround);
 
-
+    //Ajout du 2eme sol
     var solidGround = new THREE.Mesh(
         new THREE.PlaneGeometry(200, 1000),
         new THREE.MeshPhongMaterial({
@@ -482,17 +470,19 @@ function fillScene() {
     solidGround.material.color = new THREE.Color(0x646464);
     
     // Définir les paramètres de la texture
+    solidGround.material.shininess = 0.0;
+    solidGround.material.specular = new THREE.Color(0x000000);
     solidGround.material.alphaMap = null;
     solidGround.material.combine = THREE.MultiplyOperation;
+    solidGround.material.reflectivity = 0;
     solidGround.material.refractionRatio = 0.98;
     solidGround.material.depthTest = true;
     solidGround.material.depthWrite = true;
     solidGround.material.clipShadows = false;
     solidGround.material.fog = true;
-    
     scene.add(solidGround);
     
-
+    //Ajout du 3ème sol
     var solidGround = new THREE.Mesh(
         new THREE.PlaneGeometry(200,2080),
         new THREE.MeshPhongMaterial({
@@ -548,6 +538,7 @@ function fillScene() {
     
     // Définir les paramètres de la texture
     solidGround.material.shininess = 0.0;
+    solidGround.material.specular = new THREE.Color(0x000000);
     solidGround.material.alphaMap = null;
     solidGround.material.combine = THREE.MultiplyOperation;
     solidGround.material.reflectivity = 0;
@@ -556,9 +547,10 @@ function fillScene() {
     solidGround.material.depthWrite = true;
     solidGround.material.clipShadows = false;
     solidGround.material.fog = true;
-    
     scene.add(solidGround);
+    
 
+    //Ajout du 4ème sol
 	var solidGround = new THREE.Mesh(
         new THREE.PlaneGeometry(200,2080),
         new THREE.MeshPhongMaterial({
